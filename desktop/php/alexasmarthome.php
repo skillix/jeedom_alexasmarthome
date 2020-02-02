@@ -81,15 +81,15 @@ var str=data.logicalId
 		</div>
 		
 		<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
-			<i class="fas fa-wrench" style="font-size : 5em;color:#4104ee;"></i>
+			<i class="fas fa-wrench" ></i>
 			<br />
-			<span style="color:#4104ee">{{Configuration}}</span>
+			<span >{{Configuration}}</span>
 		</div>
 		
 		<div class="cursor logoSecondary" id="bt_sante">
-			<i class="fas fa-medkit" style="font-size : 5em;color:#4104ee;"></i>
+			<i class="fas fa-medkit" ></i>
 			<br />
-			<span style="color:#4104ee">{{Santé}}</span>
+			<span >{{Santé}}</span>
 		</div>
 
 
