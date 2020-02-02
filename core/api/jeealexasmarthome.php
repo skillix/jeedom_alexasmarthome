@@ -17,8 +17,8 @@
  */
 require_once dirname(__FILE__) . "/../../../../core/php/core.inc.php";
 
-if (!jeedom::apiAccess(init('apikey'), 'alexaamazonmusic')) {
- echo __('Clef API non valide, vous n\'êtes pas autorisé à effectuer cette action (alexaamazonmusic)', __FILE__);
+if (!jeedom::apiAccess(init('apikey'), 'alexasmarthome')) {
+ echo __('Clef API non valide, vous n\'êtes pas autorisé à effectuer cette action (alexasmarthome)', __FILE__);
  die();
 }	
 
@@ -28,20 +28,20 @@ $taskid = init('taskid');
 $cmd = init('cmd');
 $value = init('value');
 
-$elogic = alexaamazonmusic::byLogicalId($ip, 'alexaamazonmusic');
+$elogic = alexasmarthome::byLogicalId($ip, 'alexasmarthome');
 if (!is_object($elogic)) {
-	if (config::byKey('include_mode','alexaamazonmusic') != 1) {
+	if (config::byKey('include_mode','alexasmarthome') != 1) {
 		return false;
 	}
-	$elogic = new alexaamazonmusic();
-	$elogic->setEqType_name('alexaamazonmusic');
+	$elogic = new alexasmarthome();
+	$elogic->setEqType_name('alexasmarthome');
 	$elogic->setLogicalId($ip);
 	$elogic->setName($device);
 	$elogic->setIsEnable(true);
 	$elogic->setConfiguration('ip',$ip);
 	$elogic->setConfiguration('device',$device);
 	$elogic->save();
-	event::add('alexaamazonmusic::includeDevice',
+	event::add('alexasmarthome::includeDevice',
 	array(
 		'state' => 1
 	)
@@ -53,9 +53,9 @@ if (!is_object($elogic)) {
 	}
 }
 
-$cmdlogic = alexaamazonmusicCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmd);
+$cmdlogic = alexasmarthomeCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmd);
 if (!is_object($cmdlogic)) {
-	$cmdlogic = new alexaamazonmusicCmd();
+	$cmdlogic = new alexasmarthomeCmd();
 	$cmdlogic->setLogicalId($cmd);
 	$cmdlogic->setName($cmd);
 	$cmdlogic->setType('info');

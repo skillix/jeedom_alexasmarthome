@@ -19,7 +19,7 @@ if (!isConnect('admin')) {
 	throw new Exception('401 Unauthorized');
 }
 /*
-	DEPLACE DANS 	public static function ScanAmazonAlexa($_logical_id = null, $_exclusion = 0) de core class alexaamazonmusic.class.php
+	DEPLACE DANS 	public static function ScanAmazonAlexa($_logical_id = null, $_exclusion = 0) de core class alexasmarthome.class.php
 
 $json=file_get_contents("http://192.168.0.21:3456/devices");
 $json = json_decode($json,true);
@@ -35,24 +35,24 @@ foreach($json as $item)
 						$online = $item['online'];
 
 
-		$alexaamazonmusic = alexaamazonmusic::byLogicalId($serial, 'alexaamazonmusic');
-		if (!is_object($alexaamazonmusic)) {
-			$alexaamazonmusic = new alexaamazonmusic();
-			$alexaamazonmusic->setName($device);
-			$alexaamazonmusic->setLogicalId($serial); 
-			$alexaamazonmusic->setEqType_name('alexaamazonmusic');
-			$alexaamazonmusic->setIsEnable(1);
-			$alexaamazonmusic->setIsVisible(1);
+		$alexasmarthome = alexasmarthome::byLogicalId($serial, 'alexasmarthome');
+		if (!is_object($alexasmarthome)) {
+			$alexasmarthome = new alexasmarthome();
+			$alexasmarthome->setName($device);
+			$alexasmarthome->setLogicalId($serial); 
+			$alexasmarthome->setEqType_name('alexasmarthome');
+			$alexasmarthome->setIsEnable(1);
+			$alexasmarthome->setIsVisible(1);
 		}
-		$alexaamazonmusic->setConfiguration('serial',$serial); 
-		$alexaamazonmusic->setConfiguration('device',$device);
-		$alexaamazonmusic->setConfiguration('type',$type);
-		$alexaamazonmusic->setStatus('online',$online);
-		$alexaamazonmusic->save();
+		$alexasmarthome->setConfiguration('serial',$serial); 
+		$alexasmarthome->setConfiguration('device',$device);
+		$alexasmarthome->setConfiguration('type',$type);
+		$alexasmarthome->setStatus('online',$online);
+		$alexasmarthome->save();
  }
 */
 
-$eqLogics = alexaamazonmusic::byType('alexaamazonmusic');
+$eqLogics = alexasmarthome::byType('alexasmarthome');
 ?>
 <table class="table table-condensed tablesorter" id="table_healthNetwork">
 	<thead>
@@ -62,7 +62,7 @@ $eqLogics = alexaamazonmusic::byType('alexaamazonmusic');
 			<th>{{Device}}</th>
 			<th>{{Serial}}</th>
 			<th>{{Type}}</th>
-			<th>{{Présent *}}</th>
+			<th>{{Présent}}</th>
 			<th>{{Date création}}</th>
 		</tr>
 	</thead>
@@ -93,4 +93,3 @@ foreach ($eqLogics as $eqLogic) {
 ?>
 	</tbody>
 </table>
-* Pour actualiser la colonne <B>Présent</B>, Faites un <B>Scan</B> sur l'écran précédent.

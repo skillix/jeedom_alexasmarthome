@@ -4,10 +4,10 @@ if (!isConnect('admin')) {
 }
 
 // Obtenir l'identifiant du plugin
-$plugin = plugin::byId('alexaamazonmusic');
+$plugin = plugin::byId('alexasmarthome');
 // Charger le javascript
 sendVarToJS('eqType', $plugin->getId());
-//sendVarToJS('serveurtest', 'lionel dans alexaamazonmusic.php');
+//sendVarToJS('serveurtest', 'lionel dans alexasmarthome.php');
 
 // Accéder aux données du plugin
 $eqLogics = eqLogic::byType($plugin->getId());
@@ -89,84 +89,28 @@ var str=data.logicalId
 
     </div>
     <!-- Début de la liste des objets -->
-
-    <!-- Container de la liste -->
-	
-	<legend><i class="fas fa-table"></i> {{Mes Amazon Players}}</legend>
+    <!-- Début de la liste des objets -->
+    <legend><i class="fas fa-table"></i> {{Mes Amazon Smarthome}}</legend>
 	<div class="input-group" style="margin-bottom:5px;">
-		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic2" />
+		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic3" />
 		<div class="input-group-btn">
-			<a id="bt_resetEqlogicSearch2" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
+			<a id="bt_resetEqlogicSearch3" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
 		</div>
 	</div>	
     <!-- Container de la liste -->
 	<div class="panel">
 		<div class="panel-body">
-			<div class="eqLogicThumbnailContainer second">
+			<div class="eqLogicThumbnailContainer third">
 <?php
 foreach($eqLogics as $eqLogic) {
-
-	if ($eqLogic->getConfiguration('devicetype') == "Player") {
+	if ($eqLogic->getConfiguration('devicetype') == "Smarthome") {
 
 		$opacity = ($eqLogic->getIsEnable()) ? '' : ' disableCard';
-		echo '<div class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
+		echo '<div class="eqLogicDisplayCard cursor third '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'">';
 
 		if (($eqLogic->getStatus('online') != 'true'))
 			echo '<i class="fas fa-power-off" style="color: red;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>';
-		else {
-				if (($eqLogic->getStatus('Playing') == 'true'))
-					echo '<i class="fa fa-play" style="color: green;text-shadow: 4px 4px 4px #ccc;float:right" title="Playing"></i>';
-				else
-					echo '<i class="fas loisir-musical7" style="color: #2c8af6;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>'; // Dire que c'est un Player
-		}
 
-		$alternateImg = $eqLogic->getConfiguration('type');
-		if (file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$alternateImg.'.png'))
-			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$alternateImg.'.png" style="min-height:75px !important;" />';
-		elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png'))
-			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png" style="min-height:75px !important;" />';
-		elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/default.png'))
-			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/default.png" style="min-height:75px !important;" />';
-		else
-			echo '<img class="lazy" src="'.$plugin->getPathImgIcon().'" style="min-height:75px !important;" />';
-
-		echo '<br />';
-		echo '<span class="name">'.$eqLogic->getHumanName(true, true).'</span>';
-
-		echo '</div>';
-	}
-}
-?>
-			</div>
-		</div>
-    </div>
-
-	
-	<legend><i class="fas fa-table"></i> {{Mes Amazon PlayLists}}</legend>
-	<div class="input-group" style="margin-bottom:5px;">
-		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic2" />
-		<div class="input-group-btn">
-			<a id="bt_resetEqlogicSearch2" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
-		</div>
-	</div>	
-    <!-- Container de la liste -->
-	<div class="panel">
-		<div class="panel-body">
-			<div class="eqLogicThumbnailContainer second">
-<?php
-foreach($eqLogics as $eqLogic) {
-	if ($eqLogic->getConfiguration('devicetype') == "PlayList") {
-		$opacity = ($eqLogic->getIsEnable()) ? '' : ' disableCard';
-		echo '<div class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
-
-		if (($eqLogic->getStatus('online') != 'true'))
-			echo '<i class="fas fa-power-off" style="color: red;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>';
-		else {
-				if (($eqLogic->getStatus('Playing') == 'true'))
-					echo '<i class="fa fa-play" style="color: green;text-shadow: 4px 4px 4px #ccc;float:right" title="Playing"></i>';
-				else
-					echo '<i class="fas loisir-musical7" style="color: #2c8af6;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>'; // Dire que c'est un Player
-		}
 		$alternateImg = $eqLogic->getConfiguration('type');
 		if (file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$alternateImg.'.png'))
 			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$alternateImg.'.png" style="min-height:75px !important;" />';
@@ -185,8 +129,8 @@ foreach($eqLogics as $eqLogic) {
 ?>
 			</div>
 		</div>
-    </div>
-	
+    </div>  
+
 	
   </div>
   <!-- Container du panneau de contrôle -->
@@ -364,7 +308,7 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
 		
     <?php
 	
-	if (config::byKey('utilisateurExperimente', 'alexaamazonmusic',0)!="0")
+	if (config::byKey('utilisateurExperimente', 'alexasmarthome',0)!="0")
 	{	
 	?>
 		
@@ -389,8 +333,8 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
   </div>
 </div>
 
-<?php include_file('desktop', 'alexaamazonmusic', 'js', 'alexaamazonmusic'); ?>
-<?php include_file('desktop', 'alexaamazonmusic', 'css', 'alexaamazonmusic'); ?>
+<?php include_file('desktop', 'alexasmarthome', 'js', 'alexasmarthome'); ?>
+<?php include_file('desktop', 'alexasmarthome', 'css', 'alexasmarthome'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
 <script>
 $('#in_searchEqlogic').off('keyup').keyup(function () {

@@ -37,7 +37,7 @@ $('#bt_forcerDefaultCmd').off('click').on('click', function () {
         callback: function () {
              $.ajax({
               type: "POST",
-                  url: "plugins/alexaamazonmusic/core/ajax/alexaamazonmusic.ajax.php",
+                  url: "plugins/alexasmarthome/core/ajax/alexasmarthome.ajax.php",
               data: {
                 action: "forcerDefaultCmd",
                 id: $('.eqLogicAttr[data-l1key=id]').value(),
@@ -161,46 +161,46 @@ $("#bt_addespeasyAction").off('click').on('click', function(event)
  $('#bt_addEvent').off('click').on('click', function () {
 	$('#bt_calendartab').trigger('click');
     $('#md_modal').dialog({title: "{{Ajouter évènement}}"});
-    $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=alarm&eqLogic_id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
+    $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=alarm&eqLogic_id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
 });
 
 $('#bt_media').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Info Media}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=media&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=media&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
 });
 $('#bt_req').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Requêteur JSON}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=req&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=req&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
 });
 $('#bt_req2').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Requêteur}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=req2&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=req2&iddevice='+ $('.eqLogicAttr[data-l1key=logicalId]').value()).dialog('open');
 });
 $('#bt_sante').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Liste Amazon Echo}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=health').dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=health').dialog('open');
 });
 
 $('#bt_reminders').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Rappels/Alarmes}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=reminders').dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=reminders').dialog('open');
 });
 
 $('#bt_history').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Historique}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=history').dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=history').dialog('open');
 });
 
 $('#bt_routines').off('click').on('click', function ()
 {
   $('#md_modal').dialog({title: "{{Routines}}"});
-  $('#md_modal').load('index.php?v=d&plugin=alexaamazonmusic&modal=routines').dialog('open');
+  $('#md_modal').load('index.php?v=d&plugin=alexasmarthome&modal=routines').dialog('open');
 });
 
 
@@ -210,7 +210,7 @@ $('#bt_routines').off('click').on('click', function ()
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function ()
 {
-	// Ici il faudra faire comme dans desktop/php/alexaamazonmusic.php ligne 268 chercher type et à défaut family
+	// Ici il faudra faire comme dans desktop/php/alexasmarthome.php ligne 268 chercher type et à défaut family
 	$icon = $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').value();
 	if($icon != '' && $icon != null)
 		$('#img_device').attr("src", 'plugins/alexaapi/core/config/devices/' + $icon + '.png');
@@ -424,7 +424,7 @@ jeedom.plugin.getDeamonCookieInfo = function(_params)
     }
     var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
     var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/alexaamazonmusic/core/ajax/alexaamazonmusic.ajax.php';
+    paramsAJAX.url = 'plugins/alexasmarthome/core/ajax/alexasmarthome.ajax.php';
     paramsAJAX.data = {
         action: 'getDeamonCookieInfo',
         id: _params.id
@@ -444,7 +444,7 @@ jeedom.plugin.deamonCookieStart = function(_params)
     }
     var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
     var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/alexaamazonmusic/core/ajax/alexaamazonmusic.ajax.php';
+    paramsAJAX.url = 'plugins/alexasmarthome/core/ajax/alexasmarthome.ajax.php';
     paramsAJAX.data = {
         action: 'deamonCookieStart',
         id: _params.id,
@@ -466,7 +466,7 @@ jeedom.plugin.deamonCookieStop = function(_params)
     }
     var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
     var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/alexaamazonmusic/core/ajax/alexaamazonmusic.ajax.php';
+    paramsAJAX.url = 'plugins/alexasmarthome/core/ajax/alexasmarthome.ajax.php';
     paramsAJAX.data = {
         action: 'deamonCookieStop',
         id: _params.id
@@ -488,7 +488,7 @@ jeedom.plugin.VerifiePresenceCookie = function(_params)
     }
     var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
     var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/alexaamazonmusic/core/ajax/alexaamazonmusic.ajax.php';
+    paramsAJAX.url = 'plugins/alexasmarthome/core/ajax/alexasmarthome.ajax.php';
     paramsAJAX.data = {
         action: 'VerifiePresenceCookie',
         id: _params.id
@@ -513,7 +513,7 @@ jeedom.plugin.VerifiePresenceCookie = function(_params)
 
  	var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
  	var paramsAJAX = jeedom.private.getParamsAJAX(params);
- 	paramsAJAX.url = 'plugins/alexaamazonmusic/desktop/php/alexaamazonmusicProxy.php';
+ 	paramsAJAX.url = 'plugins/alexasmarthome/desktop/php/alexasmarthomeProxy.php';
  	paramsAJAX.data = {
  		request: _params.action+'reminder?id='+_params.node_id+'&type=action&action='+_params.action,
  	};
@@ -531,7 +531,7 @@ jeedom.plugin.VerifiePresenceCookie = function(_params)
  	}
  	var params = $.extend({}, jeedom.private.default_params, paramsSpecifics, _params || {});
  	var paramsAJAX = jeedom.private.getParamsAJAX(params);
- 	paramsAJAX.url = 'plugins/alexaamazonmusic/desktop/php/alexaamazonmusicProxy.php';
+ 	paramsAJAX.url = 'plugins/alexasmarthome/desktop/php/alexasmarthomeProxy.php';
  	paramsAJAX.data = {
  		request: 'routine?device='+_params.node_id2+'&routine='+_params.node_id,
  	};
