@@ -74,12 +74,18 @@ var str=data.logicalId
 
 
 		<!-- Bouton d accès à la configuration -->
+		<div class="cursor eqLogicAction logoSecondary">
+			<a href="index.php?v=d&m=alexaapi&p=alexaapi"><img  style="margin-top:-32px;" src="plugins/alexaapi/core/config/devices/default.png" width="75" height="75" style="min-height:75px !important;" />
+			<br />
+			<span style="color:#42d4eb">{{Lien Alexa-API}}</span></a>
+		</div>
+		
 		<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
 			<i class="fas fa-wrench" style="font-size : 5em;color:#4104ee;"></i>
 			<br />
 			<span style="color:#4104ee">{{Configuration}}</span>
 		</div>
-
+		
 		<div class="cursor logoSecondary" id="bt_sante">
 			<i class="fas fa-medkit" style="font-size : 5em;color:#4104ee;"></i>
 			<br />
