@@ -122,8 +122,8 @@ foreach($eqLogics as $eqLogic) {
 			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$alternateImg.'.png" style="min-height:75px !important;" />';
 		elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png'))
 			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png" style="min-height:75px !important;" />';
-		elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/default.png'))
-			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/default.png" style="min-height:75px !important;" />';
+		//elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/default.png'))
+		//	echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/default.png" style="min-height:75px !important;" />';
 		else
 			echo '<img class="lazy" src="'.$plugin->getPathImgIcon().'" style="min-height:75px !important;" />';
 
