@@ -117,8 +117,12 @@ foreach($eqLogics as $eqLogic) {
 		if (($eqLogic->getStatus('online') != 'true'))
 			echo '<i class="fas fa-power-off" style="color: red;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>';
 
+		//$alternateImg = $eqLogic->getConfiguration('type');
+		$logoImg = $eqLogic->getConfiguration('icon');
 		$alternateImg = $eqLogic->getConfiguration('type');
-		if (file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$alternateImg.'.png'))
+		if (file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$logoImg.'.png'))
+			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$logoImg.'.png" style="min-height:75px !important;" />';
+		elseif (file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$alternateImg.'.png'))
 			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$alternateImg.'.png" style="min-height:75px !important;" />';
 		elseif(file_exists(dirname(__FILE__).'/../../../alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png'))
 			echo '<img class="lazy" src="plugins/alexaapi/core/config/devices/'.$eqLogic->getConfiguration('family').'.png" style="min-height:75px !important;" />';
