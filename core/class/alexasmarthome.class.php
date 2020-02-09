@@ -5,19 +5,19 @@ class alexasmarthome extends eqLogic {
 		
 	public static function cron($_eqlogic_id = null) {
 
-		$r = new Cron\CronExpression('*/15 * * * *', new Cron\FieldFactory);// boucle refresh
-//		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+//		$r = new Cron\CronExpression('*/15 * * * *', new Cron\FieldFactory);// boucle refresh
+		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+		$deamon_info = alexaapi::deamon_info();
 		if ($r->isDue() && $deamon_info['state'] == 'ok') {
 			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
 			foreach ($eqLogics as $alexasmarthome) {
-				//log::add('alexasmarthome_node', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+				log::add('alexasmarthome_node', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
 				$alexasmarthome->refresh(); 				
 				sleep(2);
 			}	
 		}
 	}
-
-
+	
 	public static function createNewDevice($deviceName, $deviceSerial) {
 		$defaultRoom = intval(config::byKey('defaultParentObject','alexaapi','',true));
 		//event::add('jeedom::alert', array('level' => 'success', 'page' => 'alexasmarthome', 'message' => __('Ajout de "'.$deviceName.'"', __FILE__),));
@@ -65,122 +65,32 @@ class alexasmarthome extends eqLogic {
 	public function refresh() { //$_routines c'est pour éviter de charger les routines lors du scan
 		$deamon_info = alexaapi::deamon_info();
 		if ($deamon_info['state'] != 'ok') return false;
-		$devicetype=$this->getConfiguration('devicetype');
-		log::add('alexasmarthome', 'info', 'Refresh du device '.$this->getName().' ('.$devicetype.')');
-		$widgetPlayer=($devicetype == "Player");
-		$widgetSmarthome=($devicetype == "Smarthome");
-		$widgetPlaylist=($devicetype == "PlayList");
-		$widgetEcho=(!($widgetPlayer||$widgetSmarthome||$widgetPlaylist));
-		$device=str_replace("_player", "", $this->getConfiguration('serial'));
-
-		if ($widgetPlayer) {	// Refresh d'un player
-			$url = network::getNetworkAccess('internal'). "/plugins/alexasmarthome/core/php/jeealexasmarthome.php?apikey=".jeedom::getApiKey('alexasmarthome')."&nom=refreshPlayer"; // Envoyer la commande Refresh via jeealexasmarthome
-			$ch = curl_init($url);
-			$data = array(
-				'deviceSerialNumber' => $device,
-				'audioPlayerState' => 'REFRESH'
-			);
-			$payload = json_encode($data);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$result = curl_exec($ch);
-			curl_close($ch);
-			$_playlists=true;
-		}
-		else {
-			$_playlists=false;			
-		}
-
-		if ($_playlists) {
-			$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/playlists?device=".$device);
-			$json = json_decode($json, true);	
-			$ListeDesPlaylists = [];
-			foreach ($json as $key => $value) {
-				foreach ($value as $key2 => $playlist) {
-					foreach ($playlist as $key3 => $value2) {
-					$ListeDesPlaylists[]= $value2['playlistId'] . '|' . $value2['title']." (".$value2['trackCount'].")";
-					}	
-				}
-			}		
-			$cmd = $this->getCmd(null, 'playList');
-			if (is_object($cmd)) { //Playlists existe on  met à jour la liste des Playlists
-				$cmd->setConfiguration('listValue', join(';',$ListeDesPlaylists));
-				$cmd->save();
-				log::add('alexasmarthome', 'debug', 'Mise à jour de la liste des Playlists de '.$this->getName());
-			}
-		}
-
-		if ($widgetEcho)	{
-			log::add('alexasmarthome', 'debug', 'execute : refresh routines (WidgetEcho) avec la requète http://' . config::byKey('internalAddr') . ':3456/routines');
-			$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/routines");
-			$json = json_decode($json, true);	// Met à jour la liste des routines des commandes action "routine"
-			self::sortBy('utterance', $json, 'asc');
-			$ListeDesRoutines = [];
-			foreach ($json as $item) {
-				if ($item['utterance'] != '') 
-					$ListeDesRoutines[]= $item['creationTimeEpochMillis'] . '|' . $item['utterance'];
-				else {
-					if ($item['triggerTime'] != '') {
-						$resultattriggerTime = substr($item['triggerTime'], 0, 2) . ":" . substr($item['triggerTime'], 2, 2);
-						$ListeDesRoutines[]= $item['creationTimeEpochMillis'] . '|' . $resultattriggerTime;
-					}
-				}
-			}
-			$cmd = $this->getCmd(null, 'routine');
-			if (is_object($cmd)) {
-				$cmd->setConfiguration('listValue', join(';',$ListeDesRoutines));
-				$cmd->save();
-			}
-
+		$family=$this->getConfiguration('family');
+		log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
+		log::add('alexasmarthome', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$this->getConfiguration('applianceId'));
 		
-			// On va sauvegarder la valeur de chaque ANCIENNE prochaine Alarme/Rappel/Minuteur ...
-			$maintenant = date("i H d m w Y");//40 18 20 11 3 2019
-
-			$cmd = $this->getCmd(null, 'whennextalarminfo'); if (is_object($cmd)) $whennextalarminfo_derniereValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennextmusicalalarminfo'); if (is_object($cmd)) $whennextmusicalalarminfo_derniereValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennextreminderinfo'); if (is_object($cmd)) $whennextreminderinfo_derniereValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennexttimerinfo'); if (is_object($cmd)) $whennexttimerinfo_derniereValeur=$cmd->execCmd();
-			log::add('alexasmarthome_node', 'debug', '--------------------------------------------->>maintenant:'.$maintenant);
-			log::add('alexasmarthome_node', 'debug', '---->whennextalarminfo:'.$whennextalarminfo_derniereValeur);
-			log::add('alexasmarthome_node', 'debug', '---->whennexttimerinfo:'.$whennexttimerinfo_derniereValeur);
-
-			try {
-							log::add('alexasmarthome', 'info', 'coucou');
-				foreach ($this->getCmd('action') as $cmd) {
-							log::add('alexasmarthome', 'info', 'Test refresh de la commande '.$cmd->getName().' valeur -> '.$cmd->getConfiguration('RunWhenRefresh', 0));
-
-					if ($cmd->getConfiguration('RunWhenRefresh', 0) != '1') {
-						continue; // si le lancement n'est pas prévu, ça va au bout de la boucle foreach
-					}
-							//log::add('alexasmarthome', 'info', 'OUI pour '.$cmd->getName());
-					$value = $cmd->execute();
-				}
-			}
-			catch(Exception $exc) {log::add('alexasmarthome', 'error', __('Erreur pour ', __FILE__) . $this->getHumanName() . ' : ' . $exc->getMessage());}
-			
-			// On va sauvegarder la valeur de chaque NOUVELLE prochaine Alarme/Rappel/Minuteur ...
-			$cmd = $this->getCmd(null, 'whennextalarminfo'); if (is_object($cmd)) $whennextalarminfo_actuelleValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennextmusicalalarminfo'); if (is_object($cmd)) $whennextmusicalalarminfo_actuelleValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennextreminderinfo'); if (is_object($cmd)) $whennextreminderinfo_actuelleValeur=$cmd->execCmd();
-			$cmd = $this->getCmd(null, 'whennexttimerinfo'); if (is_object($cmd)) $whennexttimerinfo_actuelleValeur=$cmd->execCmd();
-			log::add('alexasmarthome_node', 'debug', '---->whennextalarminfo2:'.$whennextalarminfo_actuelleValeur);
-			log::add('alexasmarthome_node', 'debug', '---->whennexttimerinfo2:'.$whennexttimerinfo_actuelleValeur);
-
-				if (($whennextalarminfo_derniereValeur != $whennextalarminfo_actuelleValeur) && ($whennextalarminfo_derniereValeur==$maintenant))
-				{
-						log::add('alexasmarthome_node', 'debug', '-------------------------------->today:ALLLLLAAARRRRMMMMMMEEEE'.$today);
-					
-				}
-
-				if (($whennexttimerinfo_derniereValeur != $whennexttimerinfo_actuelleValeur) && ($whennexttimerinfo_derniereValeur==$maintenant))
-				{
-						log::add('alexasmarthome_node', 'debug', '-------------------------------->today:TTTIIIIMMMMMEEEERRRR'.$today);
-					
-				}	
-
-
-			
+			$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$this->getConfiguration('applianceId'));
+		//log::add('alexasmarthome', 'info', '--------->retour : '.$json);
+			//$json = json_encode($json, true);
+		//log::add('alexasmarthome', 'info', '--------->applicanceId : '.$json('applicanceId'));
+		$json = json_decode($json, true);
+		/*log::add('alexasmarthome', 'debug', 'json:'.json_encode($json));
+		foreach ($json[0] as $key => $value) {
+		//log::add('alexasmarthome', 'debug', 'coucke-json:'.json_encode($value));
+		log::add('alexasmarthome', 'info', $value.' <=> '.$key);
+		}*/
+		//log::add('alexasmarthome', 'info', 'name:'.$json[0]['name']);
+		//log::add('alexasmarthome', 'info', 'value:'.$json[0]['value']);
+		
+		//On cherche la commande info qui correspond à $json[0]['name']
+		if (isset($json[0]['name'])) {
+		$cmd=$this->getCmd(null, $json[0]['name']);
+				if (is_object($cmd)) { 
+					$this->checkAndUpdateCmd($json[0]['name'], $json[0]['value']);					
+					log::add('alexasmarthome', 'debug', $json[0]['name'].' a été mis à jour ('.$json[0]['value'].') sur '.$this->getName());
+				} else {
+					log::add('alexasmarthome', 'info', $json[0]['name'].' a été mis à jour, mais absent de '.$this->getName().', donc ignoré');
+				} 
 		}
 	}
 		
@@ -267,9 +177,10 @@ class alexasmarthome extends eqLogic {
 			$false=false;
 
 
-			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, "fas fa-circle", null, null, 'SmarthomeCommand?command=turnOn', "state", null, 2, $cas8);			
-			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'turnOff', true, true, "far fa-circle", null, null, 'SmarthomeCommand?command=turnOff', "state", null, 3, $cas8);
-			self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
+			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, "fas fa-circle", null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 2, $cas8);			
+			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'turnOff', true, true, "far fa-circle", null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 3, $cas8);
+			self::updateCmd ($F, 'powerState', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
+			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
 
 
@@ -280,7 +191,6 @@ class alexasmarthome extends eqLogic {
 					$vol->save();
 					}
 		// Pour la commande Refresh, on garde l'ancienne méthode
-			if (($this->hasCapaorFamilyorType("REMINDERS")) && !($this->getConfiguration('devicetype') == "Smarthome")) { 
 				//Commande Refresh
 				$createRefreshCmd = true;
 				$refresh = $this->getCmd(null, 'refresh');
@@ -303,10 +213,8 @@ class alexasmarthome extends eqLogic {
 					$refresh->setEqLogic_id($this->getId());
 					$refresh->save();
 				}
-			}
-		} else {
-		log::add('alexasmarthome', 'warning', 'Pas de capacité détectée sur '.$this->getName().' , assurez-vous que le démon est OK');
-		}
+			
+		} 
 
 		//event::add('jeedom::alert', array('level' => 'success', 'page' => 'alexasmarthome', 'message' => __('Mise à jour de "'.$this->getName().'"', __FILE__),));
 		$this->refresh(); 
@@ -326,6 +234,9 @@ class alexasmarthome extends eqLogic {
 
 
 		$this->setStatus('forceUpdate', false); //dans tous les cas, on repasse forceUpdate à false
+		
+		//self::scanAmazonSmartHome();
+		
 	}
 
 
@@ -486,7 +397,7 @@ class alexasmarthomeCmd extends cmd {
 				$cmd=$this->getEqLogic()->getCmd(null, $LogicalIdCmd);
 				if (is_object($cmd)) { 
 					$this->getEqLogic()->checkAndUpdateCmd($LogicalIdCmd, $resultjson[0][$LogicalIdCmd]);
-					//log::add('alexasmarthome', 'debug', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' et trouvé ! Valeur: '.$resultjson[0][$LogicalIdCmd]);				
+					log::add('alexasmarthome', 'debug', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' et trouvé ! Valeur: '.$resultjson[0][$LogicalIdCmd]);				
 					} else {
 					log::add('alexasmarthome', 'warning', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' mais non trouvé ! donc ignoré');
 				} 

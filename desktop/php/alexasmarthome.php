@@ -249,12 +249,18 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
             <form class="form-horizontal">
               <fieldset>
                 <div class="form-group">
-                  <label class="col-sm-2 control-label">{{ID}}</label>
+                  <label class="col-sm-2 control-label">{{entityID}}</label>
                   <div class="col-sm-8">
                       <span style="position:relative;top:+5px;left:+5px;" class="eqLogicAttr" data-l1key="logicalId"></span>
                   </div>
                 </div>
                 <div class="form-group">
+                  <label class="col-sm-2 control-label">{{applianceID}}</label>
+                  <div class="col-sm-8">
+                      <span style="position:relative;top:+5px;left:+5px;" class="eqLogicAttr" data-l1key="configuration" data-l2key="applianceId"></span>
+                  </div>
+                </div>                
+				<div class="form-group">
                   <label class="col-sm-2 control-label">{{Type}}</label>
                   <div class="col-sm-8">
                       <span style="position:relative;top:+5px;left:+5px;" class="eqLogicAttr" data-l1key="configuration" data-l2key="type"></span>
