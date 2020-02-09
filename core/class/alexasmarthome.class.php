@@ -11,7 +11,7 @@ class alexasmarthome extends eqLogic {
 		if ($r->isDue() && $deamon_info['state'] == 'ok') {
 			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
 			foreach ($eqLogics as $alexasmarthome) {
-				log::add('alexasmarthome_node', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+				log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
 				$alexasmarthome->refresh(); 				
 				sleep(2);
 			}	
@@ -65,6 +65,7 @@ class alexasmarthome extends eqLogic {
 	public function refresh() { //$_routines c'est pour éviter de charger les routines lors du scan
 		$deamon_info = alexaapi::deamon_info();
 		if ($deamon_info['state'] != 'ok') return false;
+		if ($this->getConfiguration('applianceId') == "") return false;
 		$family=$this->getConfiguration('family');
 		log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
 		log::add('alexasmarthome', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$this->getConfiguration('applianceId'));
