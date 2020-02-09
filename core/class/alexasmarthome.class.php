@@ -65,12 +65,19 @@ class alexasmarthome extends eqLogic {
 	public function refresh() { //$_routines c'est pour éviter de charger les routines lors du scan
 		$deamon_info = alexaapi::deamon_info();
 		if ($deamon_info['state'] != 'ok') return false;
-		if ($this->getConfiguration('applianceId') == "") return false;
 		$family=$this->getConfiguration('family');
-		log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
-		log::add('alexasmarthome', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$this->getConfiguration('applianceId'));
 		
-			$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$this->getConfiguration('applianceId'));
+		
+		if (($this->getConfiguration('applianceId') == "") && ($family!="GROUP")) return false;
+		
+		
+		$device=$this->getConfiguration('applianceId');
+		if ($family=="GROUP") $device=$this->getLogicalId();
+		if ($family=="GROUP") log::add('alexasmarthome', 'info', 'logicalidGROUP : '.$this->getLogicalId());
+		log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
+		log::add('alexasmarthome', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$device);
+		
+		$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$device);
 		//log::add('alexasmarthome', 'info', '--------->retour : '.$json);
 			//$json = json_encode($json, true);
 		//log::add('alexasmarthome', 'info', '--------->applicanceId : '.$json('applicanceId'));
