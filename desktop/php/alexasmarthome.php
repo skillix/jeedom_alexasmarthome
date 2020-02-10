@@ -96,12 +96,13 @@ var str=data.logicalId
     </div>
     <!-- Début de la liste des objets -->
     <legend><i class="fas fa-table"></i> {{Mes Amazon-Smarthomes}}</legend>
+	<!-- Suspendu tant que ça bug
 	<div class="input-group" style="margin-bottom:5px;">
 		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic3" />
 		<div class="input-group-btn">
 			<a id="bt_resetEqlogicSearch3" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
 		</div>
-	</div>	
+	</div>	-->
     <!-- Container de la liste -->
 	<div class="panel">
 		<div class="panel-body">
@@ -141,12 +142,13 @@ foreach($eqLogics as $eqLogic) {
     </div>  
     <!-- Début de la liste des objets -->
     <legend><i class="fas fa-table"></i> {{Mes Groups Amazon-Smarthomes}}</legend>
+		<!-- Suspendu tant que ça bug
 	<div class="input-group" style="margin-bottom:5px;">
 		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic3" />
 		<div class="input-group-btn">
 			<a id="bt_resetEqlogicSearch3" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
 		</div>
-	</div>	
+	</div>	-->
     <!-- Container de la liste -->
 	<div class="panel">
 		<div class="panel-body">
@@ -186,12 +188,13 @@ foreach($eqLogics as $eqLogic) {
     </div>  
     <!-- Début de la liste des objets -->
     <legend><i class="fas fa-table"></i> {{Mes Scènes Amazon-Smarthomes}}</legend>
+		<!-- Suspendu tant que ça bug
 	<div class="input-group" style="margin-bottom:5px;">
 		<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic3" />
 		<div class="input-group-btn">
 			<a id="bt_resetEqlogicSearch3" class="btn roundedRight" style="width:30px"><i class="fas fa-times"></i></a>
 		</div>
-	</div>	
+	</div>	-->
     <!-- Container de la liste -->
 	<div class="panel">
 		<div class="panel-body">
