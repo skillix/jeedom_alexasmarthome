@@ -11,7 +11,8 @@ class alexasmarthome extends eqLogic {
 		if ($r->isDue() && $deamon_info['state'] == 'ok') {
 			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
 			foreach ($eqLogics as $alexasmarthome) {
-				log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+				log::add('alexasmarthome_cron', 'debug', '-----------------------------------------------------------------------------');
+				log::add('alexasmarthome_cron', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
 				$alexasmarthome->refresh(); 				
 				sleep(2);
 			}	
@@ -66,6 +67,7 @@ class alexasmarthome extends eqLogic {
 		$deamon_info = alexaapi::deamon_info();
 		if ($deamon_info['state'] != 'ok') return false;
 		$family=$this->getConfiguration('family');
+		$type=$this->getConfiguration('type');
 		
 		
 		if (($this->getConfiguration('applianceId') == "") && ($family!="GROUP")) return false;
@@ -73,22 +75,42 @@ class alexasmarthome extends eqLogic {
 		
 		$device=$this->getConfiguration('applianceId');
 		if ($family=="GROUP") $device=$this->getLogicalId();
-		if ($family=="GROUP") log::add('alexasmarthome', 'info', 'logicalidGROUP : '.$this->getLogicalId());
-		log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
-		log::add('alexasmarthome', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$device);
+		if ($family=="GROUP") log::add('alexasmarthome_cron', 'info', 'logicalidGROUP : '.$this->getLogicalId());
+		log::add('alexasmarthome_cron', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
+		log::add('alexasmarthome_cron', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&type=".$type."&device=".$device);
 		
-		$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&device=".$device);
+		$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&type=".$type."&device=".$device);
 		//log::add('alexasmarthome', 'info', '--------->retour : '.$json);
 			//$json = json_encode($json, true);
 		//log::add('alexasmarthome', 'info', '--------->applicanceId : '.$json('applicanceId'));
 		$json = json_decode($json, true);
-		/*log::add('alexasmarthome', 'debug', 'json:'.json_encode($json));
-		foreach ($json[0] as $key => $value) {
+		log::add('alexasmarthome_cron', 'debug', 'json:'.json_encode($json));
+		/*foreach ($json[0] as $key => $value) {
 		//log::add('alexasmarthome', 'debug', 'coucke-json:'.json_encode($value));
 		log::add('alexasmarthome', 'info', $value.' <=> '.$key);
 		}*/
-		//log::add('alexasmarthome', 'info', 'name:'.$json[0]['name']);
-		//log::add('alexasmarthome', 'info', 'value:'.$json[0]['value']);
+		
+	
+		foreach ($json[0]['capabilityStates'] as $capabilityState) {
+			$capabilityState_array=json_decode($capabilityState, true);
+
+		//log::add('alexasmarthome', 'info', 'name:::'.$capabilityState_array['name']);
+		//log::add('alexasmarthome', 'info', 'value:::'.$capabilityState_array['value']);
+		//On cherche la commande info qui correspond à $json[0]['name']
+		if (isset($capabilityState_array['name'])) {
+		$cmd=$this->getCmd(null, $capabilityState_array['name']);
+				if (is_object($cmd)) { 
+					$this->checkAndUpdateCmd($capabilityState_array['name'], $capabilityState_array['value']);					
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$capabilityState_array['value'].') sur '.$this->getName());
+				} else {
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$capabilityState_array['value'].'), mais absent de '.$this->getName().', donc ignoré');
+				} 
+		}		
+		}
+
+		
+		
+		/*
 		
 		//On cherche la commande info qui correspond à $json[0]['name']
 		if (isset($json[0]['name'])) {
@@ -97,9 +119,11 @@ class alexasmarthome extends eqLogic {
 					$this->checkAndUpdateCmd($json[0]['name'], $json[0]['value']);					
 					log::add('alexasmarthome', 'debug', $json[0]['name'].' a été mis à jour ('.$json[0]['value'].') sur '.$this->getName());
 				} else {
-					log::add('alexasmarthome', 'info', $json[0]['name'].' a été mis à jour, mais absent de '.$this->getName().', donc ignoré');
+					log::add('alexasmarthome', 'info', $json[0]['name'].' a été mis à jour ('.$json[0]['value'].'), mais absent de '.$this->getName().', donc ignoré');
 				} 
 		}
+		*/
+		
 	}
 		
 	public static function forcerDefaultCmd($_id = null) {
@@ -182,12 +206,14 @@ class alexasmarthome extends eqLogic {
 			$widgetSmarthome=($this->getConfiguration('devicetype') == "Smarthome");
 
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
+			$cas7=(($this->hasCapaorFamilyorType("setBrightness")) && $widgetSmarthome);
 			$false=false;
 
 
 			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, "fas fa-circle", null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 2, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'turnOff', true, true, "far fa-circle", null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 3, $cas8);
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
+			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, null, true, true, null, null, null, null, null, null, 1, $cas7);
 			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
 
@@ -351,7 +377,7 @@ class alexasmarthomeCmd extends cmd {
 
 		$request = $this->buildRequest($_options);
 		//$request="http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U";
-		log::add('alexasmarthome', 'info', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
+		log::add('alexasmarthome', 'debug', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
 		$request_http = new com_http($request);
 		$request_http->setAllowEmptyReponse(true);//Autorise les réponses vides
 		if ($this->getConfiguration('noSslCheck') == 1) $request_http->setNoSslCheck(true);
