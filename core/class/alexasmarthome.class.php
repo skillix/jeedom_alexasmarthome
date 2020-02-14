@@ -97,35 +97,110 @@ class alexasmarthome extends eqLogic {
 		//log::add('alexasmarthome', 'info', 'name:::'.$capabilityState_array['name']);
 		//log::add('alexasmarthome', 'info', 'value:::'.$capabilityState_array['value']);
 		//On cherche la commande info qui correspond à $json[0]['name']
+		
+		
+		
+		$valeuraEnregistrer=$capabilityState_array['value'];
+		
 		if (isset($capabilityState_array['name'])) {
-		$cmd=$this->getCmd(null, $capabilityState_array['name']);
+			
+			if 	($capabilityState_array['name']=="color") 
+				$valeuraEnregistrer="#".self::fGetRGB($capabilityState_array['value']['hue'], $capabilityState_array['value']['saturation'], $capabilityState_array['value']['brightness']);
+			
+			if 	($capabilityState_array['name']=="colorProperties") 
+				$valeuraEnregistrer=$capabilityState_array['value']['localizationMap']['fr'];
+			
+			if 	($capabilityState_array['name']=="connectivity") {
+				//https://developer.amazon.com/fr-FR/docs/alexa/device-apis/alexa-endpointhealth.html
+				//The connectivity status of the device; one of OK or UNREACHABLE.
+				//log::add('alexasmarthome_cron', 'info', '**************connectivity ********');
+				//log::add('alexasmarthome_cron', 'info', 'value:::'.json_encode($capabilityState_array['value']));
+				//log::add('alexasmarthome_cron', 'info', 'fr:::'.json_encode($capabilityState_array['value']['value']));
+				if ($capabilityState_array['value']['value']=="OK") $valeuraEnregistrer=1; else $valeuraEnregistrer=0;
+			}			
+			
+			$cmd=$this->getCmd(null, $capabilityState_array['name']);
 				if (is_object($cmd)) { 
-					$this->checkAndUpdateCmd($capabilityState_array['name'], $capabilityState_array['value']);					
-					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$capabilityState_array['value'].') sur '.$this->getName());
+					$this->checkAndUpdateCmd($capabilityState_array['name'], $valeuraEnregistrer);					
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.') sur '.$this->getName());
 				} else {
-					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$capabilityState_array['value'].'), mais absent de '.$this->getName().', donc ignoré');
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.'), mais absent de '.$this->getName().', donc ignoré');
 				} 
 		}		
 		}
 
 		
-		
-		/*
-		
-		//On cherche la commande info qui correspond à $json[0]['name']
-		if (isset($json[0]['name'])) {
-		$cmd=$this->getCmd(null, $json[0]['name']);
-				if (is_object($cmd)) { 
-					$this->checkAndUpdateCmd($json[0]['name'], $json[0]['value']);					
-					log::add('alexasmarthome', 'debug', $json[0]['name'].' a été mis à jour ('.$json[0]['value'].') sur '.$this->getName());
-				} else {
-					log::add('alexasmarthome', 'info', $json[0]['name'].' a été mis à jour ('.$json[0]['value'].'), mais absent de '.$this->getName().', donc ignoré');
-				} 
-		}
-		*/
+
 		
 	}
-		
+	
+   /*
+    **  Converts HSV to RGB values
+	https://gist.github.com/vkbo/2323023
+    ** –––––––––––––––––––––––––––––––––––––––––––––––––––––
+    **  Reference: http://en.wikipedia.org/wiki/HSL_and_HSV
+    **  Purpose:   Useful for generating colours with
+    **             same hue-value for web designs.
+    **  Input:     Hue        (H) Integer 0-360
+    **             Saturation (S) Integer 0-100
+    **             Lightness  (V) Integer 0-100
+    **  Output:    String "R,G,B"
+    **             Suitable for CSS function RGB().
+    */
+
+    public function fGetRGB($iH, $iS, $iV) {
+
+        if($iH < 0)   $iH = 0;   // Hue:
+        if($iH > 360) $iH = 360; //   0-360
+        if($iS < 0)   $iS = 0;   // Saturation:
+        if($iS > 1) $iS = 1; //   0-100
+        if($iV < 0)   $iV = 0;   // Lightness:
+        if($iV > 1) $iV = 1; //   0-100
+
+        $dS = $iS/100.0; // Saturation: 0.0-1.0
+        $dV = $iV/100.0; // Lightness:  0.0-1.0
+        $dS = $iS; // Saturation: 0.0-1.0
+        $dV = $iV; // Lightness:  0.0-1.0
+        $dC = $dV*$dS;   // Chroma:     0.0-1.0
+        $dH = $iH/60.0;  // H-Prime:    0.0-6.0
+        $dT = $dH;       // Temp variable
+
+        while($dT >= 2.0) $dT -= 2.0; // php modulus does not work with float
+        $dX = $dC*(1-abs($dT-1));     // as used in the Wikipedia link
+
+        switch(floor($dH)) {
+            case 0:
+                $dR = $dC; $dG = $dX; $dB = 0.0; break;
+            case 1:
+                $dR = $dX; $dG = $dC; $dB = 0.0; break;
+            case 2:
+                $dR = 0.0; $dG = $dC; $dB = $dX; break;
+            case 3:
+                $dR = 0.0; $dG = $dX; $dB = $dC; break;
+            case 4:
+                $dR = $dX; $dG = 0.0; $dB = $dC; break;
+            case 5:
+                $dR = $dC; $dG = 0.0; $dB = $dX; break;
+            default:
+                $dR = 0.0; $dG = 0.0; $dB = 0.0; break;
+        }
+
+        $dM  = $dV - $dC;
+        $dR += $dM; $dG += $dM; $dB += $dM;
+        $dR *= 255; $dG *= 255; $dB *= 255;
+
+
+        //return round($dR).",".round($dG).",".round($dB);
+
+$dR = str_pad(dechex(round($dR)), 2, "0", STR_PAD_LEFT);
+$dG = str_pad(dechex(round($dG)), 2, "0", STR_PAD_LEFT);
+$dB = str_pad(dechex(round($dB)), 2, "0", STR_PAD_LEFT);
+return $dR.$dG.$dB;
+
+    }
+
+
+	
 	public static function forcerDefaultCmd($_id = null) {
 		if (!is_null($_id)) { 
 		$device = alexasmarthome::byId($_id);
@@ -207,13 +282,18 @@ class alexasmarthome extends eqLogic {
 
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
 			$cas7=(($this->hasCapaorFamilyorType("setBrightness")) && $widgetSmarthome);
+			$cas6=(($this->hasCapaorFamilyorType("setColor")) && $widgetSmarthome);
+			// commande connectivity n'a pas de capa, on utilise cas6 pour l'instant
 			$false=false;
 
 
-			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, "fas fa-circle", null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 2, $cas8);			
+			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 2, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'turnOff', true, true, "far fa-circle", null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 3, $cas8);
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, null, true, true, null, null, null, null, null, null, 1, $cas7);
+			self::updateCmd ($F, 'color', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 1, $cas6);
+			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 1, $cas6);
+			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas6); 
 			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
 
