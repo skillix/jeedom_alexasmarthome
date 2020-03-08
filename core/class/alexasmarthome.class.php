@@ -245,10 +245,10 @@ return $dR.$dG.$dB;
 						//$cmd->setDisplay('title_placeholder', 'Options');
 						$cmd->setDisplay('message_placeholder', 'Texte du rappel');
 						}						
-						if (($LogicalId=='volumeinfo') || ($LogicalId=='volume')) {
+						if ($LogicalId=='brightness-set') {
 						$cmd->setConfiguration('minValue', '0');
 						$cmd->setConfiguration('maxValue', '100');
-						$cmd->setDisplay('forceReturnLineBefore', true);
+						//$cmd->setDisplay('forceReturnLineBefore', true);
 						}					
 				}
 				$cmd->save();
@@ -285,15 +285,22 @@ return $dR.$dG.$dB;
 			$cas6=(($this->hasCapaorFamilyorType("setColor")) && $widgetSmarthome);
 			// commande connectivity n'a pas de capa, on utilise cas6 pour l'instant
 			$false=false;
+			self::updateCmd ($F, 'powerState', 'info', 'binary', false, "Etat", true, true, null, null, null, null, null, null, 1, $cas8);
+			self::updateCmd ($F, 'turnOn_jaune', 'action', 'other', false, 'Allume en Jaune', true, true, 'fas fa-circle" style="color:yellow', null, null, 'SmarthomeCommand?command=setColor&color=yellow', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_bleu', 'action', 'other', false, 'Allume en Bleu', true, true, 'fas fa-circle" style="color:blue', null, null, 'SmarthomeCommand?command=setColor&color=blue', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_rose', 'action', 'other', false, 'Allume en Rose', true, true, 'fas fa-circle" style="color:pink', null, null, 'SmarthomeCommand?command=setColor&color=pink', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_violet', 'action', 'other', false, 'Allume en Violet', true, true, 'fas fa-circle" style="color:purple', null, null, 'SmarthomeCommand?command=setColor&color=purple', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_rouge', 'action', 'other', false, 'Allume en Rouge', true, true, 'fas fa-circle" style="color:red', null, null, 'SmarthomeCommand?command=setColor&color=red', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 10, $cas6);			
 
-
-			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'turnOn', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 2, $cas8);			
-			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'turnOff', true, true, "far fa-circle", null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 3, $cas8);
-			self::updateCmd ($F, 'powerState', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
-			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, null, true, true, null, null, null, null, null, null, 1, $cas7);
-			self::updateCmd ($F, 'color', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 1, $cas6);
-			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 1, $cas6);
-			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas6); 
+			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 10, $cas8);			
+			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 11, $cas8);
+			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 3, $cas6);
+			self::updateCmd ($F, 'brightness-set', 'action', 'slider', false, 'Définir Luminosité', true, true, null, null, null, 'SmarthomeCommand?command=setBrightness&brightness=#slider#', "brightness", null, 3, $cas7);
+			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, "Luminosité", true, true, null, null, null, null, null, null, 1, $cas7);
+			//self::updateCmd ($F, 'color', 'info', 'string', false, null, false, true, null, null, null, null, null, null, 1, $cas6);
+			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 1, $cas6);
+			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 1, $cas6); 
 			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
 
@@ -327,7 +334,6 @@ return $dR.$dG.$dB;
 					$refresh->setEqLogic_id($this->getId());
 					$refresh->save();
 				}
-			
 		} 
 
 		//event::add('jeedom::alert', array('level' => 'success', 'page' => 'alexasmarthome', 'message' => __('Mise à jour de "'.$this->getName().'"', __FILE__),));
@@ -431,9 +437,13 @@ class alexasmarthomeCmd extends cmd {
 			$eqLogic = $this->getEqLogic();
 			$this->setConfiguration('value', 'http://' . config::byKey('internalAddr') . ':3456/' . $this->getConfiguration('request') . "&device=" . $eqLogic->getConfiguration('serial'));
 		}
+		
+		
+		/* C'est la section qui ajoute automatiquement une commande info qui porte le nom du infoName d'une commande action
 		$actionInfo = alexasmarthomeCmd::byEqLogicIdCmdName($this->getEqLogic_id(), $this->getName());
 		if (is_object($actionInfo)) $this->setId($actionInfo->getId());
-		if (($this->getType() == 'action') && ($this->getConfiguration('infoName') != '')) {//Si c'est une action et que Commande info est renseigné
+		if (($this->getType() == 'action') && ($this->getConfiguration('infoName') != '')
+			&& ($this->getConfiguration('infoName') != 'refresh')) {//Si c'est une action et que Commande info est renseigné
 			$actionInfo = alexasmarthomeCmd::byEqLogicIdCmdName($this->getEqLogic_id(), $this->getConfiguration('infoName'));
 			if (!is_object($actionInfo)) {//C'est une commande qui n'existe pas
 				$actionInfo = new alexasmarthomeCmd();
@@ -446,7 +456,7 @@ class alexasmarthomeCmd extends cmd {
 			$actionInfo->setEqLogic_id($this->getEqLogic_id());
 			$actionInfo->save();
 			$this->setConfiguration('infoId', $actionInfo->getId());
-		}
+		}*/
 	}
 
 	public function execute($_options = null) {
@@ -508,13 +518,20 @@ class alexasmarthomeCmd extends cmd {
 		} 
 		elseif (($this->getType() == 'action') && ($this->getConfiguration('infoName') != '')) {
 				$LogicalIdCmd=$this->getConfiguration('infoName');
-				$cmd=$this->getEqLogic()->getCmd(null, $LogicalIdCmd);
-				if (is_object($cmd)) { 
-					$this->getEqLogic()->checkAndUpdateCmd($LogicalIdCmd, $resultjson[0][$LogicalIdCmd]);
-					log::add('alexasmarthome', 'debug', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' et trouvé ! Valeur: '.$resultjson[0][$LogicalIdCmd]);				
-					} else {
-					log::add('alexasmarthome', 'warning', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' mais non trouvé ! donc ignoré');
-				} 
+				if ($LogicalIdCmd=="refresh") {//c'est qu'on fait un refresh
+						log::add('alexasmarthome', 'debug', 'Refresh demandé dans 3s');	
+						sleep(3);
+						$this->getEqLogic()->refresh();
+				}						
+				else {
+					$cmd=$this->getEqLogic()->getCmd(null, $LogicalIdCmd);
+					if (is_object($cmd)) { 
+						$this->getEqLogic()->checkAndUpdateCmd($LogicalIdCmd, $resultjson[0][$LogicalIdCmd]);
+						log::add('alexasmarthome', 'debug', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' et trouvé ! Valeur: '.$resultjson[0][$LogicalIdCmd]);				
+						} else {
+						log::add('alexasmarthome', 'warning', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' mais non trouvé ! donc ignoré');
+					} 
+				}
 		}
 		return true;
 	}
@@ -526,7 +543,7 @@ class alexasmarthomeCmd extends cmd {
 	log::add('alexasmarthome', 'info', '----Command:*'.$command.'* Request:'.json_encode($_options));
 		switch ($command) {
 			case 'SmarthomeCommand':
-				$request = $this->build_ControledeSliderSelectMessage();
+				$request = $this->build_ControledeSliderSelectMessage($_options, '2960');
 			break;			
 			default:
 				$request = '';
@@ -540,26 +557,28 @@ class alexasmarthomeCmd extends cmd {
 	}
 
 	private function build_ControledeSliderSelectMessage($_options = array(), $default = "Ceci est un message de test") {
-		$cmd=$this->getEqLogic()->getCmd(null, 'volumeinfo');
+		/*$cmd=$this->getEqLogic()->getCmd(null, 'volumeinfo');
 		if (is_object($cmd))
 			$lastvolume=$cmd->execCmd();
-		
+		*/
 		$request = $this->getConfiguration('request');
-		//log::add('alexasmarthome_node', 'info', '---->Request2:'.$request);
+		log::add('alexasmarthome', 'info', '---->Request2:'.$request.'---->_options:'.json_encode($_options));
 		//log::add('alexasmarthome_node', 'debug', '---->getName:'.$this->getEqLogic()->getCmd(null, 'volumeinfo')->execCmd());
 		if ((isset($_options['slider'])) && ($_options['slider'] == "")) $_options['slider'] = $default;
 		if ((isset($_options['select'])) && ($_options['select'] == "")) $_options['select'] = $default;
 		if ((isset($_options['message'])) && ($_options['message'] == "")) $_options['message'] = $default;
+		if ((isset($_options['color'])) && ($_options['color'] == "")) $_options['color'] = $default;
 		// Si on est sur une commande qui utilise volume, on va remettre après execution le volume courant
 		if (strstr($request, '&volume=')) $request = $request.'&lastvolume='.$lastvolume;
 		// Pour eviter l'absence de déclaration :
 		if (isset($_options['slider'])) $_options_slider = $_options['slider']; else $_options_slider="";
 		if (isset($_options['select'])) $_options_select = $_options['select']; else $_options_select="";
+		if (isset($_options['color'])) $_options_color = str_replace('#', '', $_options['color']); else $_options_color="";
 		if (isset($_options['message'])) $_options_message = $_options['message']; else $_options_message="";
 		if (isset($_options['volume'])) $_options_volume = $_options['volume']; else $_options_volume="";
-		$request = str_replace(array('#slider#', '#select#', '#message#', '#volume#'), 
-		array($_options_slider, $_options_select, urlencode(self::decodeTexteAleatoire($_options_message)), $_options_volume), $request);
-		//log::add('alexasmarthome_node', 'info', '---->RequestFinale:'.$request);
+		$request = str_replace(array('#slider#', '#select#', '#message#', '#volume#', '#color#'), 
+		array($_options_slider, $_options_select, urlencode(self::decodeTexteAleatoire($_options_message)), $_options_volume, $_options_color), $request);
+		log::add('alexasmarthome', 'info', '---->RequestFinale:'.$request);
 		return $request;
 	}	
 
