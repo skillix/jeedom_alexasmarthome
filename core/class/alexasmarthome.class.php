@@ -286,21 +286,21 @@ return $dR.$dG.$dB;
 			// commande connectivity n'a pas de capa, on utilise cas6 pour l'instant
 			$false=false;
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, "Etat", true, true, null, null, null, null, null, null, 1, $cas8);
+			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 2, $cas6); 
+			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, "Luminosité", true, true, null, null, null, null, null, null, 3, $cas7);
+			self::updateCmd ($F, 'brightness-set', 'action', 'slider', false, 'Définir Luminosité', true, true, null, null, null, 'SmarthomeCommand?command=setBrightness&brightness=#slider#', "brightness", null, 4, $cas7);
 			self::updateCmd ($F, 'turnOn_jaune', 'action', 'other', false, 'Allume en Jaune', true, true, 'fas fa-circle" style="color:yellow', null, null, 'SmarthomeCommand?command=setColor&color=yellow', "refresh", null, 10, $cas6);			
-			self::updateCmd ($F, 'turnOn_bleu', 'action', 'other', false, 'Allume en Bleu', true, true, 'fas fa-circle" style="color:blue', null, null, 'SmarthomeCommand?command=setColor&color=blue', "refresh", null, 10, $cas6);			
-			self::updateCmd ($F, 'turnOn_rose', 'action', 'other', false, 'Allume en Rose', true, true, 'fas fa-circle" style="color:pink', null, null, 'SmarthomeCommand?command=setColor&color=pink', "refresh", null, 10, $cas6);			
-			self::updateCmd ($F, 'turnOn_violet', 'action', 'other', false, 'Allume en Violet', true, true, 'fas fa-circle" style="color:purple', null, null, 'SmarthomeCommand?command=setColor&color=purple', "refresh", null, 10, $cas6);			
-			self::updateCmd ($F, 'turnOn_rouge', 'action', 'other', false, 'Allume en Rouge', true, true, 'fas fa-circle" style="color:red', null, null, 'SmarthomeCommand?command=setColor&color=red', "refresh", null, 10, $cas6);			
-			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 10, $cas6);			
+			self::updateCmd ($F, 'turnOn_bleu', 'action', 'other', false, 'Allume en Bleu', true, true, 'fas fa-circle" style="color:blue', null, null, 'SmarthomeCommand?command=setColor&color=blue', "refresh", null, 11, $cas6);			
+			self::updateCmd ($F, 'turnOn_rose', 'action', 'other', false, 'Allume en Rose', true, true, 'fas fa-circle" style="color:pink', null, null, 'SmarthomeCommand?command=setColor&color=pink', "refresh", null, 12, $cas6);			
+			self::updateCmd ($F, 'turnOn_violet', 'action', 'other', false, 'Allume en Violet', true, true, 'fas fa-circle" style="color:purple', null, null, 'SmarthomeCommand?command=setColor&color=purple', "refresh", null, 13, $cas6);			
+			self::updateCmd ($F, 'turnOn_rouge', 'action', 'other', false, 'Allume en Rouge', true, true, 'fas fa-circle" style="color:red', null, null, 'SmarthomeCommand?command=setColor&color=red', "refresh", null, 14, $cas6);			
+			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 15, $cas6);			
+			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 16, $cas6);
 
-			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 10, $cas8);			
-			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 11, $cas8);
-			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 3, $cas6);
-			self::updateCmd ($F, 'brightness-set', 'action', 'slider', false, 'Définir Luminosité', true, true, null, null, null, 'SmarthomeCommand?command=setBrightness&brightness=#slider#', "brightness", null, 3, $cas7);
-			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, "Luminosité", true, true, null, null, null, null, null, null, 1, $cas7);
+			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
+			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 18, $cas8);
+			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 16, $cas6);
 			//self::updateCmd ($F, 'color', 'info', 'string', false, null, false, true, null, null, null, null, null, null, 1, $cas6);
-			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 1, $cas6);
-			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 1, $cas6); 
 			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
 
