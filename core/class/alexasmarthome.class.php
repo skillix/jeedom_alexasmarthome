@@ -286,6 +286,8 @@ return $dR.$dG.$dB;
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
 			$cas7=(($this->hasCapaorFamilyorType("setBrightness")) && $widgetSmarthome);
 			$cas6=(($this->hasCapaorFamilyorType("setColor")) && $widgetSmarthome);
+			$cas5=(($this->hasCapaorFamilyorType("setColorTemperature")) && $widgetSmarthome);
+			$cas4=(($this->hasCapaorFamilyorType("setTargetTemperature")) && $widgetSmarthome);
 			// commande connectivity n'a pas de capa, on utilise cas6 pour l'instant
 			$false=false;
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, "Etat", true, true, null, null, null, null, null, null, 1, $cas8);
@@ -299,11 +301,12 @@ return $dR.$dG.$dB;
 			self::updateCmd ($F, 'turnOn_rouge', 'action', 'other', false, 'Allume en Rouge', true, true, 'fas fa-circle" style="color:red', null, null, 'SmarthomeCommand?command=setColor&color=red', "refresh", null, 14, $cas6);			
 			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 15, $cas6);			
 			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 16, $cas6);
+			self::updateCmd ($F, 'thermostatMode', 'info', 'string', false, "thermostatMode", true, true, null, null, null, null, null, null, 16, $cas4);
 
 			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 18, $cas8);
 			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 16, $cas6);
-			self::updateCmd ($F, 'temperature-set', 'action', 'select', false, 'Définir Température du blanc', false, true, null, null, null, 'SmarthomeCommand?command=setColorTemperature&color=#select#', "refresh", 'warm_white|Blanc chaud;soft_white|Blanc doux;white|Blanc;daylight_white|Blanc lumière du jour;cool_white|Blanc froid', 16, $cas6);
+			self::updateCmd ($F, 'temperature-set', 'action', 'select', false, 'Définir Température du blanc', false, true, null, null, null, 'SmarthomeCommand?command=setColorTemperature&color=#select#', "refresh", 'warm_white|Blanc chaud;soft_white|Blanc doux;white|Blanc;daylight_white|Blanc lumière du jour;cool_white|Blanc froid', 16, $cas5);
 			//self::updateCmd ($F, 'color', 'info', 'string', false, null, false, true, null, null, null, null, null, null, 1, $cas6);
 			//self::updateCmd ($F, 'state', 'info', 'binary', false, null, true, true, null, null, null, null, null, null, 1, $cas8);
 	//public function updateCmd ($forceUpdate, $LogicalId, $Type, $SubType, $RunWhenRefresh, $Name, $IsVisible, $title_disable, $setDisplayicon, $infoNameArray, $setTemplate_lien, $request, $infoName, $listValue, $Order, $Test) {
