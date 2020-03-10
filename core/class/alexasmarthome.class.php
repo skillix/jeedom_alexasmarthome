@@ -113,6 +113,10 @@ class alexasmarthome extends eqLogic {
 					$valeuraEnregistrer =$capabilityState_array['value']['name'];
 			}
 			
+			if 	($capabilityState_array['name']=="temperature") {
+				$valeuraEnregistrer=$capabilityState_array['value']['value'];
+			}	
+			
 			if 	($capabilityState_array['name']=="connectivity") {
 				//https://developer.amazon.com/fr-FR/docs/alexa/device-apis/alexa-endpointhealth.html
 				//The connectivity status of the device; one of OK or UNREACHABLE.
