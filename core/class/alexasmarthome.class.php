@@ -107,8 +107,11 @@ class alexasmarthome extends eqLogic {
 			if 	($capabilityState_array['name']=="color") 
 				$valeuraEnregistrer="#".self::fGetRGB($capabilityState_array['value']['hue'], $capabilityState_array['value']['saturation'], $capabilityState_array['value']['brightness']);
 			
-			if 	($capabilityState_array['name']=="colorProperties") 
+			if 	($capabilityState_array['name']=="colorProperties") {
 				$valeuraEnregistrer=$capabilityState_array['value']['localizationMap']['fr'];
+				if ($valeuraEnregistrer == '')
+					$valeuraEnregistrer =$capabilityState_array['value']['name'];
+			}
 			
 			if 	($capabilityState_array['name']=="connectivity") {
 				//https://developer.amazon.com/fr-FR/docs/alexa/device-apis/alexa-endpointhealth.html
