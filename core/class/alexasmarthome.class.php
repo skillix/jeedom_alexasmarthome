@@ -113,7 +113,7 @@ class alexasmarthome extends eqLogic {
 					$valeuraEnregistrer =$capabilityState_array['value']['name'];
 			}
 			
-			if 	($capabilityState_array['name']=="temperature") {
+			if 	(($capabilityState_array['name']=="temperature") || ($capabilityState_array['name']=="targetSetpoint")) {
 				$valeuraEnregistrer=$capabilityState_array['value']['value'];
 			}	
 			
@@ -305,7 +305,9 @@ return $dR.$dG.$dB;
 			self::updateCmd ($F, 'turnOn_rouge', 'action', 'other', false, 'Allume en Rouge', true, true, 'fas fa-circle" style="color:red', null, null, 'SmarthomeCommand?command=setColor&color=red', "refresh", null, 14, $cas6);			
 			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 15, $cas6);			
 			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 16, $cas6);
-			self::updateCmd ($F, 'thermostatMode', 'info', 'string', false, "thermostatMode", true, true, null, null, null, null, null, null, 16, $cas4);
+			self::updateCmd ($F, 'thermostatMode', 'info', 'string', false, "Mode du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
+			self::updateCmd ($F, 'temperature', 'info', 'string', false, "Température", true, true, null, null, null, null, null, null, 16, $cas4);
+			self::updateCmd ($F, 'targetSetpoint', 'info', 'string', false, "Consigne du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
 
 			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 18, $cas8);
