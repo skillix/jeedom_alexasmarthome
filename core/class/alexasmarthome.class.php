@@ -306,9 +306,10 @@ return $dR.$dG.$dB;
 			self::updateCmd ($F, 'turnOn_vert', 'action', 'other', false, 'Allume en Vert', true, true, 'fas fa-circle" style="color:green', null, null, 'SmarthomeCommand?command=setColor&color=green', "refresh", null, 15, $cas6);			
 			self::updateCmd ($F, 'colorProperties', 'info', 'string', false, "Couleur", true, true, null, null, null, null, null, null, 16, $cas6);
 			self::updateCmd ($F, 'thermostatMode', 'info', 'string', false, "Mode du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
-			self::updateCmd ($F, 'temperature', 'info', 'string', false, "Température", true, true, null, null, null, null, null, null, 16, $cas4);
-			self::updateCmd ($F, 'targetSetpoint', 'info', 'string', false, "Consigne du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
-
+			self::updateCmd ($F, 'temperature', 'info', 'numeric', false, "Température", true, true, null, null, null, null, null, null, 16, $cas4);
+			self::updateCmd ($F, 'targetSetpoint', 'info', 'numeric', false, "Consigne du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
+//https://www.openhab.org/docs/ecosystem/alexa/
+//https://github.com/alexa/alexa-smarthome
 			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 18, $cas8);
 			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 16, $cas6);
