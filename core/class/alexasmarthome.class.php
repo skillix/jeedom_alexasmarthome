@@ -4,20 +4,50 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class alexasmarthome extends eqLogic {
 		
 	public static function cron($_eqlogic_id = null) {
-
-//		$r = new Cron\CronExpression('*/15 * * * *', new Cron\FieldFactory);// boucle refresh
-		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
-		$deamon_info = alexaapi::deamon_info();
-		if ($r->isDue() && $deamon_info['state'] == 'ok') {
-			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
-			foreach ($eqLogics as $alexasmarthome) {
-				log::add('alexasmarthome_cron', 'debug', '-----------------------------------------------------------------------------');
-				log::add('alexasmarthome_cron', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
-				$alexasmarthome->refresh(); 				
-				sleep(2);
-			}	
-		}
-	}
+				  try {
+				  $r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+				  $deamon_info = alexaapi::deamon_info();
+				  if ($r->isDue() && $deamon_info['state'] == 'ok') {
+					  $eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
+					  foreach ($eqLogics as $alexasmarthome) {
+						log::add('alexasmarthome', 'debug', '-----------------------------------------------------------------------------');
+						  if ($alexasmarthome->getConfiguration('type') == "LIGHT" || $alexasmarthome->getConfiguration('type') == "SMARTPLUG") { ;
+							  log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+							  $alexasmarthome->refresh(); 				
+							  //sleep(0.5);
+						 }else {
+							  log::add('alexasmarthome', 'debug', 'CRON Refresh No Light No Plug: '.$alexasmarthome->getName());
+						  }
+					  }	
+				  }
+				} catch (Exception $e) {
+					log::add('alexasmarthome', 'ERROR', 'CRON Refresh EROOR: '.$e);
+				}
+			  log::add('alexasmarthome', 'debug', 'CRON Refresh: FINISH');
+			}
+		  
+			  public static function cron5($_eqlogic_id = null) {
+				  try {
+				  $r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+				  $deamon_info = alexaapi::deamon_info();
+				  if ($r->isDue() && $deamon_info['state'] == 'ok') {
+					  $eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
+					  foreach ($eqLogics as $alexasmarthome) {
+						log::add('alexasmarthome', 'debug', '-----------------------------------------------------------------------------');
+						  if ($alexasmarthome->getConfiguration('type') != "LIGHT" || $alexasmarthome->getConfiguration('type') != "SMARTPLUG") { ;
+							  log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+							  $alexasmarthome->refresh(); 				
+							  //sleep(0.5);
+						 }else {
+							  log::add('alexasmarthome', 'debug', 'CRON Refresh Autre Lampe Prise: '.$alexasmarthome->getName());
+						  }
+					  }	
+				  }
+				} catch (Exception $e) {
+					log::add('alexasmarthome', 'ERROR', 'CRON Refresh EROOR: '.$e);
+				}
+			  log::add('alexasmarthome', 'debug', 'CRON Refresh: FINISH');
+			}
 	
 	public static function createNewDevice($deviceName, $deviceSerial) {
 		$defaultRoom = intval(config::byKey('defaultParentObject','alexaapi','',true));
