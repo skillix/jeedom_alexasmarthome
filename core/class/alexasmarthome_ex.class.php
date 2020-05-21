@@ -4,50 +4,20 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class alexasmarthome extends eqLogic {
 		
 	public static function cron($_eqlogic_id = null) {
-				  try {
-				  $r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
-				  $deamon_info = alexaapi::deamon_info();
-				  if ($r->isDue() && $deamon_info['state'] == 'ok') {
-					  $eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
-					  foreach ($eqLogics as $alexasmarthome) {
-						//log::add('alexasmarthome', 'debug', '-----------------------------------------------------------------------------');
-						  if ($alexasmarthome->getConfiguration('type') == "LIGHT" || $alexasmarthome->getConfiguration('type') == "SMARTPLUG") { ;
-							  //log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
-							  $alexasmarthome->refresh(); 				
-							  //sleep(0.5);
-						 }else {
-							  log::add('alexasmarthome', 'debug', 'CRON Refresh No Light No Plug: '.$alexasmarthome->getName());
-						  }
-					  }	
-				  }
-				} catch (Exception $e) {
-					log::add('alexasmarthome', 'ERROR', 'CRON Refresh EROOR: '.$e);
-				}
-			  //log::add('alexasmarthome', 'debug', 'CRON Refresh: FINISH');
-			}
-		  
-			  public static function cron5($_eqlogic_id = null) {
-				  try {
-				  $r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
-				  $deamon_info = alexaapi::deamon_info();
-				  if ($r->isDue() && $deamon_info['state'] == 'ok') {
-					  $eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
-					  foreach ($eqLogics as $alexasmarthome) {
-						log::add('alexasmarthome', 'debug', '-----------------------------------------------------------------------------');
-						  if ($alexasmarthome->getConfiguration('type') != "LIGHT" || $alexasmarthome->getConfiguration('type') != "SMARTPLUG") { ;
-							  log::add('alexasmarthome', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
-							  $alexasmarthome->refresh(); 				
-							  //sleep(0.5);
-						 }else {
-							  log::add('alexasmarthome', 'debug', 'CRON Refresh Autre Lampe Prise: '.$alexasmarthome->getName());
-						  }
-					  }	
-				  }
-				} catch (Exception $e) {
-					log::add('alexasmarthome', 'ERROR', 'CRON Refresh EROOR: '.$e);
-				}
-			  log::add('alexasmarthome', 'debug', 'CRON Refresh: FINISH');
-			}
+
+//		$r = new Cron\CronExpression('*/15 * * * *', new Cron\FieldFactory);// boucle refresh
+		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+		$deamon_info = alexaapi::deamon_info();
+		if ($r->isDue() && $deamon_info['state'] == 'ok') {
+			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
+			foreach ($eqLogics as $alexasmarthome) {
+				log::add('alexasmarthome_cron', 'debug', '-----------------------------------------------------------------------------');
+				log::add('alexasmarthome_cron', 'debug', 'CRON Refresh: '.$alexasmarthome->getName());
+				$alexasmarthome->refresh(); 				
+				sleep(2);
+			}	
+		}
+	}
 	
 	public static function createNewDevice($deviceName, $deviceSerial) {
 		$defaultRoom = intval(config::byKey('defaultParentObject','alexaapi','',true));
@@ -105,19 +75,16 @@ class alexasmarthome extends eqLogic {
 		
 		$device=$this->getConfiguration('applianceId');
 		if ($family=="GROUP") $device=$this->getLogicalId();
-		if ($family=="GROUP") log::add('alexasmarthome', 'info', 'logicalidGROUP : '.$this->getLogicalId());
-		log::add('alexasmarthome', 'info', ' ');
-		log::add('alexasmarthome', 'info', ' ╔══════════════════════[Refresh du device '.$this->getName().' ('.$family.')]═════════════════════════════════════════════════════════');
-		//log::add('alexasmarthome', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
-		log::add('alexasmarthome', 'info', ' ║ ════envoi══> '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&type=".$type."&device=".$device);
+		if ($family=="GROUP") log::add('alexasmarthome_cron', 'info', 'logicalidGROUP : '.$this->getLogicalId());
+		log::add('alexasmarthome_cron', 'info', 'Refresh du device : '.$this->getName().' ('.$family.')');
+		log::add('alexasmarthome_cron', 'info', 'Envoi de : '."http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&type=".$type."&device=".$device);
 		
 		$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/querySmarthomeDevices?entityType=".$family."&type=".$type."&device=".$device);
 		//log::add('alexasmarthome', 'info', '--------->retour : '.$json);
 			//$json = json_encode($json, true);
 		//log::add('alexasmarthome', 'info', '--------->applicanceId : '.$json('applicanceId'));
 		$json = json_decode($json, true);
-		//log::add('alexasmarthome', 'debug', 'json:'.json_encode($json));
-		log::add('alexasmarthome', 'debug', '║ <══réponse═  '.json_encode($json));
+		log::add('alexasmarthome_cron', 'debug', 'json:'.json_encode($json));
 		/*foreach ($json[0] as $key => $value) {
 		//log::add('alexasmarthome', 'debug', 'coucke-json:'.json_encode($value));
 		log::add('alexasmarthome', 'info', $value.' <=> '.$key);
@@ -153,18 +120,18 @@ class alexasmarthome extends eqLogic {
 			if 	($capabilityState_array['name']=="connectivity") {
 				//https://developer.amazon.com/fr-FR/docs/alexa/device-apis/alexa-endpointhealth.html
 				//The connectivity status of the device; one of OK or UNREACHABLE.
-				//log::add('alexasmarthome', 'info', '**************connectivity ********');
-				//log::add('alexasmarthome', 'info', 'value:::'.json_encode($capabilityState_array['value']));
-				//log::add('alexasmarthome', 'info', 'fr:::'.json_encode($capabilityState_array['value']['value']));
+				//log::add('alexasmarthome_cron', 'info', '**************connectivity ********');
+				//log::add('alexasmarthome_cron', 'info', 'value:::'.json_encode($capabilityState_array['value']));
+				//log::add('alexasmarthome_cron', 'info', 'fr:::'.json_encode($capabilityState_array['value']['value']));
 				if ($capabilityState_array['value']['value']=="OK") $valeuraEnregistrer=1; else $valeuraEnregistrer=0;
 			}			
 			
 			$cmd=$this->getCmd(null, $capabilityState_array['name']);
 				if (is_object($cmd)) { 
 					$this->checkAndUpdateCmd($capabilityState_array['name'], $valeuraEnregistrer);					
-					log::add('alexasmarthome', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.') sur '.$this->getName());
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.') sur '.$this->getName());
 				} else {
-					log::add('alexasmarthome', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.'), mais absent de '.$this->getName().', donc ignoré');
+					log::add('alexasmarthome_cron', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.'), mais absent de '.$this->getName().', donc ignoré');
 				} 
 		}		
 		}
@@ -343,7 +310,7 @@ return $dR.$dG.$dB;
 			self::updateCmd ($F, 'targetSetpoint', 'info', 'numeric', false, "Consigne du thermostat", true, true, null, null, null, null, null, null, 16, $cas4);
 //https://www.openhab.org/docs/ecosystem/alexa/
 //https://github.com/alexa/alexa-smarthome
-			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', false, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
+			self::updateCmd ($F, 'turnOn', 'action', 'other', false, 'Allume', true, true, 'fas fa-circle" style="color:white', null, null, 'SmarthomeCommand?command=turnOn', "powerState", null, 17, $cas8);			
 			self::updateCmd ($F, 'turnOff', 'action', 'other', false, 'Eteint', true, true, 'far fa-circle" style="color:black', null, null, 'SmarthomeCommand?command=turnOff', "powerState", null, 18, $cas8);
 			self::updateCmd ($F, 'rgb-set', 'action', 'select', false, 'Définir Couleur', false, true, null, null, null, 'SmarthomeCommand?command=setColor&color=#select#', "refresh", 'red|Rouge;crimson|Cramoisie;salmon|Saumon;orange|Orange;gold|Or;yellow|Jaune;green|Vert;turquoise|Turquoise;cyan|Cyan;sky_blue|Bleu ciel;blue|Bleu;purple|Violet;magenta|Magenta;pink|Rose;lavender|Lavande', 16, $cas6);
 			self::updateCmd ($F, 'temperature-set', 'action', 'select', false, 'Définir Température du blanc', false, true, null, null, null, 'SmarthomeCommand?command=setColorTemperature&color=#select#', "refresh", 'warm_white|Blanc chaud;soft_white|Blanc doux;white|Blanc;daylight_white|Blanc lumière du jour;cool_white|Blanc froid', 16, $cas5);
