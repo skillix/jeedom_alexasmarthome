@@ -347,25 +347,44 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
                     <label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
                   </div>
                 </div>
+				
+				
+	<br><br>
+	
+			<div class="form-group">
+			<label class="col-sm-4 control-label">{{Auto-actualisation (cron)}}</label>
+				<div class="col-sm-6">
+					<div class="input-group col-sm-8">
+					<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="autorefresh" placeholder="{{Auto-actualisation (cron)}}"/>
+					<span class="input-group-btn">
+					<a class="btn btn-success btn-sm " id="bt_cronGenerator" ><i class="fas fa-question-circle"></i></a>
+					</span>
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-group">
+			<label class="col-sm-4 control-label">{{Dernier lancement}}</label>
+				<div class="col-sm-8">
+					<input type="text" disabled class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="dernierLancement">
+
+				</div>
+			</div>			
+				
+				
+				
+				
+				
+				
               </fieldset>
             </form>
           </div>
 		  
-<!--		  
-<div class="cursor" id="bt_media" data-l1key="logicalId" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-	<center>
-	<i class="fa loisir-musical7" style="font-size : 6em;color:#767676;"></i>
-	</center>
-<span style="font-size : 1.1em;position:relative; top : 25px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Info Média}}</center></span>
-</div>
-	 	Castré par Nebz et HadesDT   
-<div class="cursor" id="bt_test" data-l1key="logicalId" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-<center>
-<i class="fa loisir-musical7" style="font-size : 6em;color:#767676;"></i>
-</center>
-<span style="font-size : 1.1em;position:relative; top : 25px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Test}}</center></span>
-</div>
--->
+
+
+
+
+
 <?php
 
 	//if ($eqLogic->getConfiguration('devicetype')!="Smarthome")
@@ -403,21 +422,18 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
                   <div class="col-sm-8">
                       <span style="position:relative;top:+5px;left:+5px;font-size: 10px;" class="eqLogicAttr" data-l1key="configuration" data-l2key="capabilities"></span>
                   </div>		      
-                <div class="form-group">
+				</div>
+				<div class="form-group">
+                  <label class="col-sm-2 control-label">{{Triggers}}</label>
+                  <div class="col-sm-8">
+				<span style="position:relative;top:+5px;left:+5px;font-size: 10px;" class="eqLogicAttr" data-l1key="configuration" data-l2key="triggers"></span>
+                  </div>		      
+				</div>                
+				<div class="form-group">
                   <div class="col-sm-10">
                     <center>
                       <img src="core/img/no_image.gif" data-original=".jpg" id="img_device" class="img-responsive" style="max-height : 250px;"  onerror="this.src='plugins/alexaapi/core/config/devices/default.png'"/>
                     </center>
-                  </div>
-                </div>
-                
-				
-				
-                <div class="form-group">
-                  <label class="col-sm-2 control-label">{{Multiroom avec}}</label>
-                  <div class="col-sm-8" id="multiroom-members">
-                  <!-- Liste des membres du multiroom -->
-
                   </div>
                 </div>
               </fieldset>

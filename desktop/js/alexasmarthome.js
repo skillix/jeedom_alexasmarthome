@@ -149,7 +149,7 @@ console.log ("adresse:"+yourUrl);
 
 $('#bt_cronGenerator').off('click').on('click',function(){
     jeedom.getCronSelectModal({},function (result) {
-        $('.configKey[data-l1key=autorefresh]').value(result.value);
+        $('.eqLogicAttr[data-l1key=configuration][data-l2key=autorefresh]').value(result.value);
     });
 });
 

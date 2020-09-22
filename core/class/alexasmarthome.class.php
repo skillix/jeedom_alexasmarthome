@@ -3,6 +3,36 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class alexasmarthome extends eqLogic {
 		
+
+
+	public static function cron($_eqlogic_id = null) {
+		$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexasmarthome', true);
+		foreach ($eqLogics as $alexasmarthome) {
+			$autorefresh = $alexasmarthome->getConfiguration('autorefresh');
+			if ($autorefresh == '') $autorefresh = '* * * * *';
+			$alexasmarthome->setConfiguration('dernierLancement',"CRON ".date("d.m.Y")." ".date("H:i:s")); 
+			if ($alexasmarthome->getIsEnable() == 1) {
+				try {
+					$c = new Cron\CronExpression($autorefresh, new Cron\FieldFactory);
+					if ($c->isDue()) {
+						try {
+							//log::add('alexasmarthome','debug','-----------------------------------------------------------------');
+							//log::add('alexasmarthome','debug','Lancement CRON de **'.$alexasmarthome->getName().'**');
+							//log::add('alexasmarthome','debug','-----------------------------------------------------------------');
+								//$alexasmarthome->refresh(); 				
+								$alexasmarthome->save(); // pour enregistrer dernierLancement
+						} catch (Exception $exc) {
+							log::add('alexasmarthome', 'error', __('Erreur pour ', __FILE__) . $alexasmarthome->getHumanName() . ' : ' . $exc->getMessage());
+						}
+					}
+				} catch (Exception $exc) {
+					log::add('alexasmarthome', 'error', __('Expression cron non valide pour ', __FILE__) . $alexasmarthome->getHumanName() . ' : ' . $autorefresh);
+				}
+			}
+		}
+	}
+/*
+ancienne version
 	public static function cron($_eqlogic_id = null) {
 				  try {
 				  $r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
@@ -48,7 +78,7 @@ class alexasmarthome extends eqLogic {
 				}
 			  log::add('alexasmarthome', 'debug', 'CRON Refresh: FINISH');
 			}
-	
+	*/
 	public static function createNewDevice($deviceName, $deviceSerial) {
 		$defaultRoom = intval(config::byKey('defaultParentObject','alexaapi','',true));
 		//event::add('jeedom::alert', array('level' => 'success', 'page' => 'alexasmarthome', 'message' => __('Ajout de "'.$deviceName.'"', __FILE__),));
@@ -61,6 +91,8 @@ class alexasmarthome extends eqLogic {
 		$newDevice->setDisplay('height', '500');
 		$newDevice->setConfiguration('device', $deviceName);
 		$newDevice->setConfiguration('serial', $deviceSerial);
+		$newDevice->setConfiguration('autorefresh', "*/5 * * * *");
+		$newDevice->setConfiguration('dernierLancement', "Jamais");
 		$newDevice->setIsEnable(1);
 		return $newDevice;
 	}
@@ -77,9 +109,13 @@ class alexasmarthome extends eqLogic {
 		if(((gettype($capa) == "array" && in_array($thisCapa,$capa))) || ((gettype($capa) == "string" && strpos($capa, $thisCapa) !== false))) {
 			if($thisCapa == "REMINDERS" && $type == "A15ERDAKK5HQQG") return false;
 			return true;
+		} 
+		$capaT=$this->getConfiguration('triggers',"");
+		if(((gettype($capaT) == "array" && in_array($thisCapa,$capaT))) || ((gettype($capaT) == "string" && strpos($capaT, $thisCapa) !== false))) {
+			return true;
 		} else {
 			return false;
-		}
+		}	
 	}
 	
 	public function sortBy($field, &$array, $direction = 'asc') {
@@ -162,14 +198,15 @@ class alexasmarthome extends eqLogic {
 			$cmd=$this->getCmd(null, $capabilityState_array['name']);
 				if (is_object($cmd)) { 
 					$this->checkAndUpdateCmd($capabilityState_array['name'], $valeuraEnregistrer);					
-					log::add('alexasmarthome', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.') sur '.$this->getName());
+					log::add('alexasmarthome', 'debug', '╠═══> '.$capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.') sur '.$this->getName());
 				} else {
-					log::add('alexasmarthome', 'debug', $capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.'), mais absent de '.$this->getName().', donc ignoré');
+					log::add('alexasmarthome', 'debug', '╠═══> '.$capabilityState_array['name'].' a été mis à jour ('.$valeuraEnregistrer.'), mais absent de '.$this->getName().', donc ignoré');
 				} 
 		}		
 		}
 
-		
+				log::add('alexasmarthome', 'info', ' ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════');
+
 
 		
 	}
@@ -311,24 +348,33 @@ return $dR.$dG.$dB;
 		//log::add('alexasmarthome', 'debug', '**********************postSave '.$this->getName().'***********************************');
 		$F=$this->getStatus('forceUpdate');// forceUpdate permet de recharger les commandes à valeur d'origine, mais sans supprimer/recréer les commandes
 				$capa=$this->getConfiguration('capabilities','');
+				$capaT=$this->getConfiguration('triggers','');
+				// il faudra ajouter supportedTriggers	, ex : contactSensorDetectionStateTrigger pour les contacts
 				$type=$this->getConfiguration('type','');
-		if(!empty($capa)) {
-					if (strstr($this->getName(), "Alexa Apps")) {
-						self::updateCmd ($F, 'push', 'action', 'message', false, 'Push', true, true, 'fa jeedomapp-audiospeak', null, null, 'push?text=#message#', null, null, 1, true);
-						return;
-					}
+		if((!empty($capa)) || (!empty($capaT))) {
+			
+			if (strstr($this->getName(), "Alexa Apps")) {
+				self::updateCmd ($F, 'push', 'action', 'message', false, 'Push', true, true, 'fa jeedomapp-audiospeak', null, null, 'push?text=#message#', null, null, 1, true);
+				return;
+			}
 
 			$widgetSmarthome=($this->getConfiguration('devicetype') == "Smarthome");
+			//log::add('alexasmarthome', 'debug', '**********************updateCmd '.$this->getName().'***********************************');
 
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
 			$cas7=(($this->hasCapaorFamilyorType("setBrightness")) && $widgetSmarthome);
 			$cas6=(($this->hasCapaorFamilyorType("setColor")) && $widgetSmarthome);
 			$cas5=(($this->hasCapaorFamilyorType("setColorTemperature")) && $widgetSmarthome);
 			$cas4=(($this->hasCapaorFamilyorType("setTargetTemperature")) && $widgetSmarthome);
+			$cas3=(($this->hasCapaorFamilyorType("contactSensorDetectionStateTrigger")) && $widgetSmarthome);
 			// commande connectivity n'a pas de capa, on utilise cas6 pour l'instant
 			$false=false;
+			// CONTACT_SENSOR
+			self::updateCmd ($F, 'detectionState', 'info', 'string', false, "Etat Détection", true, true, null, null, null, null, null, null, 1, $cas3);// "DETECTED","NOT_DETECTED"
+			
+			
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, "Etat", true, true, null, null, null, null, null, null, 1, $cas8);
-			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 2, $cas6); 
+			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 2, ($cas6 || $cas3)); 
 			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, "Luminosité", true, true, null, null, null, null, null, null, 3, $cas7);
 			self::updateCmd ($F, 'brightness-set', 'action', 'slider', false, 'Définir Luminosité', true, true, null, null, null, 'SmarthomeCommand?command=setBrightness&brightness=#slider#', "brightness", null, 4, $cas7);
 			self::updateCmd ($F, 'turnOn_jaune', 'action', 'other', false, 'Allume en Jaune', true, true, 'fas fa-circle" style="color:yellow', null, null, 'SmarthomeCommand?command=setColor&color=yellow', "refresh", null, 10, $cas6);			
@@ -360,6 +406,7 @@ return $dR.$dG.$dB;
 					}
 		// Pour la commande Refresh, on garde l'ancienne méthode
 				//Commande Refresh
+
 				$createRefreshCmd = true;
 				$refresh = $this->getCmd(null, 'refresh');
 				if (!is_object($refresh)) {
@@ -381,7 +428,8 @@ return $dR.$dG.$dB;
 					$refresh->setEqLogic_id($this->getId());
 					$refresh->save();
 				}
-		} 
+		} //else {log::add('alexasmarthome', 'debug', '$capa de '.$this->getName().' vide :-( ');}
+			
 
 		//event::add('jeedom::alert', array('level' => 'success', 'page' => 'alexasmarthome', 'message' => __('Mise à jour de "'.$this->getName().'"', __FILE__),));
 		$this->refresh(); 
