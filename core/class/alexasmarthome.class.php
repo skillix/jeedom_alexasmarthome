@@ -326,7 +326,11 @@ return $dR.$dG.$dB;
 						$cmd->setConfiguration('minValue', '0');
 						$cmd->setConfiguration('maxValue', '100');
 						//$cmd->setDisplay('forceReturnLineBefore', true);
-						}					
+						}	
+						if ($LogicalId == 'targetSetpoint-set') {
+                       				 $cmd->setConfiguration('minValue', '18');
+                       				 $cmd->setConfiguration('maxValue', '30');
+				                }
 				}
 				$cmd->save();
 			}
@@ -361,6 +365,9 @@ return $dR.$dG.$dB;
 			$widgetSmarthome=($this->getConfiguration('devicetype') == "Smarthome");
 			//log::add('alexasmarthome', 'debug', '**********************updateCmd '.$this->getName().'***********************************');
 
+           		$cas10 = (($this->hasCapaorFamilyorType('_Fan.Speed')) && $widgetSmarthome);
+			$cas11 = (($this->hasCapaorFamilyorType('_Blind.Lift')) && $widgetSmarthome);			
+			
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
 			$cas7=(($this->hasCapaorFamilyorType("setBrightness")) && $widgetSmarthome);
 			$cas6=(($this->hasCapaorFamilyorType("setColor")) && $widgetSmarthome);
@@ -372,7 +379,10 @@ return $dR.$dG.$dB;
 			// CONTACT_SENSOR
 			self::updateCmd ($F, 'detectionState', 'info', 'string', false, "Etat Détection", true, true, null, null, null, null, null, null, 1, $cas3);// "DETECTED","NOT_DETECTED"
 			
-			
+			self::updateCmd($F, 'thermostatMode-set', 'action', 'select', false, 'Définir le mode du thermostat', true, true, null, null, null, 'SmarthomeCommand?command=setThermostatMode&thermostatMode=#select#', "refresh", 'AUTO|Auto;COOL|Cool;HEAT|Heat;OFF|Off', 16, $cas4);
+			self::updateCmd($F, 'targetSetpoint-set', 'action', 'slider', false, 'Définir la consigne du thermostat', false, true, null, null, null, 'SmarthomeCommand?command=setTargetTemperature&targetTemperature=#slider#', "refresh", null, 16, $cas4);
+			self::updateCmd($F, 'blindFilft-set', 'action', 'slider', false, 'Définir le pourcentage', true, true, null, null, null, 'SmarthomeCommand?command=Blind.Lift&rangeValue=#slider#', "refresh", null, 4, $cas11);
+			self::updateCmd($F, 'fanSpeed-set', 'action', 'select', false, 'Définir la vitesse', true, true, null, null, null, 'SmarthomeCommand?command=Fan.Speed&rangeValue=#select#', "refresh", '1|1;2|2;3|3;4|4;5|5;6|6;7|7', 16, $cas10);
 			self::updateCmd ($F, 'powerState', 'info', 'binary', false, "Etat", true, true, null, null, null, null, null, null, 1, $cas8);
 			self::updateCmd ($F, 'connectivity', 'info', 'binary', false, "Connectivité", true, true, null, null, null, null, null, null, 2, ($cas6 || $cas3)); 
 			self::updateCmd ($F, 'brightness', 'info', 'numeric', false, "Luminosité", true, true, null, null, null, null, null, null, 3, $cas7);
